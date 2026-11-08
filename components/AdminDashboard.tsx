@@ -713,7 +713,7 @@ export default function AdminDashboard() {
                       </button>
                     </>
                   )}
-                  {selectedOrder.invoice_status === 'failed' && <p className="text-xs text-amber-700">Pengiriman sebelumnya gagal. Periksa email pengirim dan coba lagi.</p>}
+                  {selectedOrder.invoice_status === 'failed' && <p className="text-xs text-amber-700">Pengiriman sebelumnya gagal. Pastikan GMAIL_SCRIPT_URL dan GMAIL_SCRIPT_TOKEN sudah diatur di Vercel, lalu coba lagi.</p>}
                 </div>
                 {selectedOrder.order_items && selectedOrder.order_items.length > 0 && (
                   <div>
