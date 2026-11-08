@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-
-const schema = z.object({
-	finalTotal: z.number().int().positive().max(999999999999),
-});
 
 function escapeHtml(value: string) {
 	return value.replace(/[&<>"']/g, character => ({
@@ -26,7 +21,7 @@ function formatIDR(value: number) {
 	}).format(value);
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	const user = await getCurrentUser();
 	if (!user) return NextResponse.json({ error: 'Silakan masuk terlebih dahulu.' }, { status: 401 });
 	if (user.app_metadata?.role !== 'admin') {
@@ -41,13 +36,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 		return NextResponse.json({ error: 'Pengiriman invoice belum dikonfigurasi. Atur GMAIL_USER dan GMAIL_APP_PASSWORD di Vercel.' }, { status: 503 });
 	}
 
-	const parsed = schema.safeParse(await request.json());
-	if (!parsed.success) return NextResponse.json({ error: 'Harga final invoice tidak valid.' }, { status: 400 });
-
 	const { id } = await params;
 	const { data: order, error: orderError } = await client
 		.from('orders')
-		.select('id,order_number,customer_name,email,address,status,invoice_status')
+		.select('id,order_number,customer_name,email,address,status,total_estimate,invoice_status')
 		.eq('id', id)
 		.maybeSingle();
 	if (orderError) return NextResponse.json({ error: 'Data pesanan gagal dimuat.' }, { status: 500 });
@@ -55,12 +47,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 	if (order.status === 'Dibatalkan') return NextResponse.json({ error: 'Invoice tidak dapat dikirim untuk pesanan yang dibatalkan.' }, { status: 409 });
 	if (order.invoice_status === 'sent') return NextResponse.json({ error: 'Invoice pesanan ini sudah pernah dikirim.' }, { status: 409 });
 	if (order.invoice_status === 'sending') return NextResponse.json({ error: 'Invoice sedang diproses. Muat ulang sebelum mencoba lagi.' }, { status: 409 });
+	const catalogTotal = Number(order.total_estimate);
+	if (!Number.isFinite(catalogTotal) || catalogTotal <= 0 || catalogTotal > 999999999999) {
+		return NextResponse.json({ error: 'Total harga katalog pada pesanan tidak valid.' }, { status: 400 });
+	}
 	const previousStatus = order.status;
 
 	const { data: claimedOrder, error: claimError } = await client
 		.from('orders')
 		.update({
-			final_total: parsed.data.finalTotal,
+			final_total: catalogTotal,
 			status: 'Menunggu pembayaran',
 			invoice_status: 'sending',
 		})
@@ -92,7 +88,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 	const customerName = escapeHtml(order.customer_name);
 	const orderNumber = escapeHtml(order.order_number);
 	const address = escapeHtml(order.address);
-	const totalText = formatIDR(parsed.data.finalTotal);
+	const totalText = formatIDR(catalogTotal);
 	const itemRows = (items ?? []).map(item => {
 		const quantity = Number(item.quantity);
 		return `<tr>
@@ -112,6 +108,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 		textItems,
 		'',
 		`Total pembayaran: ${totalText}`,
+		`Catatan: Total menggunakan harga katalog website yang tercatat saat pesanan dibuat.`,
 		'Metode pembayaran: QRIS. Silakan ikuti petunjuk pembayaran dari admin.',
 	].join('\n');
 	const html = `<!doctype html>
@@ -122,7 +119,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 				<h1 style="margin:12px 0 4px;color:#12345b;font-size:24px">Invoice Pesanan</h1>
 				<p style="margin:0;color:#64748b">${orderNumber}</p>
 				<hr style="margin:24px 0;border:0;border-top:1px solid #e2e8f0">
-				<p>Halo ${customerName}, berikut invoice dengan harga final yang telah dikonfirmasi.</p>
+				<p>Halo ${customerName}, berikut invoice berdasarkan harga katalog website yang tercatat saat pesanan dibuat.</p>
 				<p style="color:#475569"><b>Alamat:</b> ${address}</p>
 				<table style="width:100%;border-collapse:collapse;font-size:14px">
 					<thead><tr style="color:#64748b;text-align:left">
