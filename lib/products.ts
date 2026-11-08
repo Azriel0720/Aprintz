@@ -1,0 +1,10 @@
+export type Product = { id:string; slug:string; name:string; category:string; description:string; price:number; unit:string; badge?:string; color:string; icon:string; options:string[] };
+export const products: Product[] = [
+ {id:'p1',slug:'brosur-a5',name:'Brosur A5',category:'Digital Printing',description:'Brosur full color untuk promosi, event, dan kebutuhan bisnis.',price:850,unit:'lembar mulai',badge:'Populer',color:'from-blue-100 to-sky-50',icon:'▤',options:['Art Paper 120 gsm','Art Paper 150 gsm','Art Paper 稀']},
+ {id:'p2',slug:'kartu-nama',name:'Kartu Nama',category:'Offset & Digital',description:'Kartu nama profesional dengan pilihan finishing premium.',price:35000,unit:'box mulai',color:'from-indigo-100 to-blue-50',icon:'▣',options:['Art Carton 260 gsm','Art Carton 310 gsm','Laminasi doff','Laminasi glossy']},
+ {id:'p3',slug:'banner-flexi',name:'Banner / Spanduk',category:'Large Format',description:'Cetak banner tajam untuk promosi indoor maupun outdoor.',price:25000,unit:'m² mulai',badge:'Best seller',color:'from-cyan-100 to-blue-50',icon:'▱',options:['Flexi China 280 gsm','Flexi Korea 340 gsm','Mata ayam','Potong sesuai ukuran']},
+ {id:'p4',slug:'stiker-custom',name:'Stiker Custom',category:'Digital Printing',description:'Stiker custom bentuk dan ukuran sesuai kebutuhan.',price:12000,unit:'lembar mulai',color:'from-sky-100 to-indigo-50',icon:'◈',options:['Vinyl','Chromoj','Transparan','Die cut']},
+ {id:'p5',slug:'kaos-custom',name:'Kaos Custom',category:'Konveksi',description:'Produksi kaos custom untuk komunitas, event, dan brand.',price:65000,unit:'pcs mulai',color:'from-blue-100 to-violet-50',icon:'♧',options:['Cotton Combed 24s','Cotton Combed 30s','Sablon plastisol','DTF']},
+ {id:'p6',slug:'undangan',name:'Undangan',category:'Offset & Digital',description:'Undangan acara dengan desain dan finishing pilihan.',price:1800,unit:'pcs mulai',color:'from-indigo-100 to-slate-50',icon:'✉',options:['Art Paper','Ivory','Lipat 2','Lipat 3']}
+];
+export const formatIDR=(n:number)=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);

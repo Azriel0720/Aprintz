@@ -1,0 +1,55 @@
+begin;
+
+alter table public.products
+  add column if not exists specifications text not null default '',
+  add column if not exists important_note text not null default '';
+
+create table if not exists public.printing_knowledge (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique,
+  category text not null,
+  title text not null,
+  keywords text[] not null default '{}',
+  content text not null,
+  is_active boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.printing_knowledge enable row level security;
+
+insert into public.printing_knowledge (slug, category, title, keywords, content) values
+('memilih-metode-cetak', 'Dasar percetakan', 'Memilih metode cetak', array['digital printing','offset','jumlah','metode cetak','cetak banyak'], 'Digital printing cocok untuk jumlah sedikit, kebutuhan cepat, dan data yang bisa berubah. Offset umumnya lebih efisien untuk jumlah besar dan hasil yang konsisten, tetapi perlu persiapan produksi. Minta estimasi berdasarkan jumlah, ukuran, bahan, warna, dan tenggat sebelum memilih.'),
+('persiapan-file-desain', 'File desain', 'Persiapan file desain untuk cetak', array['file','desain','pdf','ai','cdr','coreldraw','bleed','potong'], 'Kirim file final dengan ukuran jadi yang benar. PDF siap cetak biasanya pilihan aman; file AI, CDR, atau PSD dapat digunakan bila font sudah di-outline atau disertakan dan tautan gambar tidak putus. Sertakan bleed/area lebih sekitar 2–3 mm bila desain akan dipotong, dan beri tanda ukuran jadi bila diminta. Konfirmasikan template dan spesifikasi akhir kepada tim sebelum produksi.'),
+('resolusi-gambar', 'File desain', 'Resolusi gambar untuk cetak', array['resolusi','dpi','ppi','gambar pecah','pixel','foto'], 'Untuk materi kecil yang dilihat dekat, siapkan gambar sekitar 300 dpi pada ukuran cetak. Untuk banner atau large format yang dilihat dari jarak lebih jauh, kebutuhan resolusi bisa lebih rendah tergantung ukuran dan jarak pandang. Hindari memperbesar gambar kecil secara berlebihan; kirim file asli agar tim dapat memeriksanya.'),
+('warna-rgb-cmyk', 'File desain', 'Warna RGB dan CMYK', array['warna','rgb','cmyk','warna layar','warna cetak'], 'Layar memakai RGB sedangkan banyak proses cetak memakai CMYK, sehingga warna cetak dapat berbeda dari tampilan layar. Warna neon dan warna layar yang sangat terang sulit direproduksi persis. Minta proof atau konfirmasi warna untuk pekerjaan yang membutuhkan kecocokan warna penting.'),
+('kertas-art-paper', 'Bahan cetak', 'Memilih kertas art paper', array['art paper','brosur','flyer','majalah','glossy','kertas'], 'Art paper memiliki permukaan licin dan hasil warna yang cerah, umum dipakai untuk flyer, brosur, poster, dan materi promosi. Gramasi yang lebih tinggi terasa lebih tebal. Pilih gramasi, ukuran, dan finishing sesuai kebutuhan; ketersediaan bahan dikonfirmasi sebelum order.'),
+('kertas-hvs', 'Bahan cetak', 'Memilih kertas HVS', array['hvs','dokumen','nota','print dokumen','kertas tulis'], 'HVS memiliki permukaan tidak mengilap dan nyaman untuk ditulis atau dibaca, misalnya dokumen dan materi teks. Untuk gambar penuh warna atau hasil promosi yang lebih pekat, pertimbangkan kertas coated seperti art paper.'),
+('stiker-chromo-hvs', 'Sticker', 'Perbedaan stiker Chromo dan HVS', array['stiker chromo','stiker hvs','label','chromo','hvs sticker'], 'Stiker Chromo berpermukaan licin dan cocok untuk label berwarna di penggunaan umum. Stiker HVS berpermukaan seperti kertas tulis, biasanya mudah ditulis. Keduanya tidak otomatis tahan air; pilih bahan vinyl bila memerlukan ketahanan lebih terhadap air atau pemakaian luar ruang.'),
+('stiker-vinyl', 'Sticker', 'Memilih bahan stiker vinyl', array['vinyl','stiker outdoor','tahan air','doff','glossy','transparan','blockout'], 'Vinyl umumnya lebih tahan air dan cocok untuk label atau aplikasi yang lebih awet dibanding stiker kertas. Pilih glossy untuk tampilan mengilap, doff untuk tampilan tidak mengilap, transparan untuk latar bening, dan blockout bila perlu menutup bidang di belakang. Ketahanan akhir bergantung pada tinta, laminasi, permukaan tempel, dan paparan lingkungan.'),
+('stiker-one-way', 'Sticker', 'Stiker one way vision', array['one way','one way vision','kaca','kaca mobil','jendela'], 'One way vision adalah bahan berlubang yang biasa ditempel pada kaca agar grafis terlihat dari luar sementara cahaya masih dapat masuk. Efek pandang satu arah tidak selalu sama pada semua kondisi cahaya. Pastikan ukuran kaca dan sisi pemasangan dengan tim.'),
+('spanduk-banner', 'Large format', 'Spanduk dan banner', array['spanduk','banner','mmt','flexi','outdoor','mata ayam'], 'Spanduk atau banner flexi cocok untuk promosi ukuran besar dan dapat digunakan di dalam maupun luar ruang sesuai jenis bahan. Informasikan ukuran lebar × tinggi, lokasi pemasangan, jarak pandang, durasi pemakaian, dan kebutuhan finishing seperti lipat, jahit, atau mata ayam.'),
+('large-format-poster', 'Large format', 'Poster dan large format', array['poster','large format','albatros','luster','photo paper','canvas','backlite'], 'Large format mencakup poster, foto besar, canvas, albatros, luster, photo paper, dan bahan backlit. Pilihan bahan ditentukan oleh tampilan, pencahayaan, jarak pandang, dan apakah hasil akan dibingkai. Sampaikan ukuran final dan tujuan penggunaannya saat meminta penawaran.'),
+('kalender', 'Produk cetak', 'Menyiapkan desain kalender', array['kalender','kalender dinding','kalender meja','tanggal','libur'], 'Sebelum mencetak kalender, periksa kembali urutan bulan, hari, tanggal, hari libur, dan tahun pada desain. Tentukan ukuran, format dinding atau meja, jumlah halaman, bahan, dan kebutuhan jilid. Minta proof akhir untuk memeriksa tanggal sebelum produksi.'),
+('kartu-nama', 'Produk cetak', 'Menyiapkan kartu nama', array['kartu nama','business card','nama','jabatan','kontak'], 'Pastikan nama, jabatan, nomor kontak, email, alamat, dan ejaan pada kartu nama sudah benar. Jaga teks penting dari area potong dan konfirmasikan ukuran, jenis kertas, finishing, serta jumlah box.'),
+('brosur-flyer', 'Produk cetak', 'Menyiapkan brosur dan flyer', array['brosur','flyer','lipat','promosi','art paper'], 'Tentukan ukuran terbuka dan ukuran setelah dilipat, jumlah lipatan, sisi cetak, gramasi kertas, dan jumlah cetak. Periksa urutan panel lipatan, nomor kontak, QR code, dan ejaan. Gunakan gambar dengan resolusi memadai dan sisakan area aman dari garis potong.'),
+('finishing-laminasi', 'Finishing', 'Finishing laminasi', array['laminasi','doff','glossy','finishing','kilap'], 'Laminasi glossy memberi tampilan lebih mengilap dan dapat membuat warna tampak lebih cerah; doff memberi kesan tidak mengilap. Laminasi dapat membantu melindungi permukaan, tetapi tidak membuat semua produk tahan air atau tahan cuaca. Pastikan opsi tersedia untuk bahan dan ukuran yang dipilih.'),
+('finishing-jilid', 'Finishing', 'Pilihan jilid', array['jilid','spiral','lem panas','buku','majalah','notebook'], 'Pilihan jilid tergantung ketebalan, jumlah halaman, cara penggunaan, dan tampilan yang diinginkan. Spiral dapat dibuka rata, sedangkan jilid lem cocok untuk bentuk buku tertentu. Sampaikan jumlah halaman, ukuran, dan jenis sampul untuk rekomendasi yang tepat.'),
+('packaging-kemasan', 'Packaging', 'Menyiapkan desain packaging', array['packaging','kemasan','lunchbox','box','dus','pisau'], 'Untuk kemasan, gunakan dieline atau pola potong yang disetujui sebelum menata desain. Perhatikan panel lipatan, lem, area potong, bleed, dan ruang aman. Bahan serta bentuk akhir dapat memengaruhi warna dan hasil lipatan; minta proof atau sampel bila diperlukan.'),
+('merchandise-custom', 'Merchandise', 'Menyiapkan file merchandise custom', array['merchandise','mug','tumbler','kaos','dtf','uv dtf','totebag','pin'], 'Tiap merchandise memiliki area cetak dan cara produksi berbeda. Sertakan ukuran desain, posisi cetak, jumlah, warna produk, serta sisi yang akan dicetak. File vektor membantu untuk logo; untuk foto gunakan gambar beresolusi cukup. Konfirmasi teknik cetak yang sesuai dengan bahan barang.'),
+('plakat-akrilik', 'Produk custom', 'Menyiapkan plakat akrilik', array['plakat','akrilik','penghargaan','piala','custom'], 'Untuk plakat, siapkan nama penerima, judul acara, tanggal, logo, dan ejaan final. Pilih ukuran, ketebalan, bentuk, warna, serta jenis dudukan bila tersedia. Minta pratinjau tata letak sebelum produksi agar penulisan nama dan logo tepat.'),
+('foto-dan-photobook', 'Photography', 'Cetak foto dan photobook', array['foto','photobook','canvas','pas foto','frame','album'], 'Gunakan foto asli dengan resolusi tinggi dan periksa crop pada rasio ukuran cetak. Untuk photobook tentukan ukuran, orientasi, jumlah halaman, dan urutan foto. Warna foto dapat berbeda dari layar; pilih kertas dan finishing sesuai kebutuhan display atau album.'),
+('jumlah-minimum', 'Pemesanan', 'Jumlah minimum dan kuantitas', array['minimum order','jumlah minimum','kuantitas','pcs','box','satuan'], 'Jumlah minimum, satuan penjualan, dan harga bergantung pada produk serta spesifikasi. Sebutkan kuantitas dan ukuran yang dibutuhkan supaya tim dapat memberi estimasi yang sesuai. Jangan menganggap harga satuan berlaku untuk semua jumlah atau variasi.'),
+('estimasi-harga', 'Pemesanan', 'Informasi harga dan estimasi', array['harga','biaya','ongkir','estimasi','penawaran'], 'Harga yang tampil di katalog adalah harga dasar sesuai satuan produk dan belum tentu mencakup semua variasi atau finishing. Estimasi akhir ditentukan setelah ukuran, bahan, jumlah, finishing, dan desain dikonfirmasi. Biaya pengiriman juga bergantung pada alamat dan metode kirim.'),
+('alur-pemesanan', 'Pemesanan', 'Alur pemesanan APRINTZ', array['order','pesan','pemesanan','checkout','status pesanan'], 'Pilih produk, masukkan spesifikasi dan jumlah, lalu kirim desain atau tautan file jika tersedia. Tim APRINTZ akan memeriksa detail dan mengonfirmasi estimasi sebelum produksi. Pantau status melalui fitur lacak pesanan atau hubungi CS bila memerlukan bantuan.'),
+('pemeriksaan-proof', 'Kualitas', 'Memeriksa proof sebelum cetak', array['proof','preview','sampel','cek desain','persetujuan'], 'Sebelum menyetujui proof, periksa ejaan, angka, ukuran, crop, posisi elemen, urutan halaman, warna penting, dan sisi cetak. Persetujuan proof berarti detail tersebut dianggap final. Untuk warna kritis, minta informasi tentang proof warna yang tersedia.'),
+('informasi-konsultasi', 'Layanan', 'Informasi untuk konsultasi cetak', array['konsultasi','ukuran','deadline','bantuan','whatsapp'], 'Agar konsultasi cepat, siapkan jenis produk, ukuran, jumlah, bahan atau penggunaan, finishing, tenggat, lokasi pengiriman, serta file desain bila ada. Tim APRINTZ dapat membantu mengecek kebutuhan dan mengonfirmasi ketersediaan, harga, serta estimasi produksi.')
+on conflict (slug) do update set
+  category = excluded.category,
+  title = excluded.title,
+  keywords = excluded.keywords,
+  content = excluded.content,
+  is_active = true,
+  updated_at = now();
+
+notify pgrst, 'reload schema';
+commit;

@@ -1,0 +1,624 @@
+.theme {
+  --admin-ink: #1b2b25;
+  --admin-rail: #14251f;
+  --admin-canvas: #f0f3ed;
+  --admin-line: #dce4da;
+  --admin-lime: #d7ed6d;
+  --admin-coral: #ed7256;
+  min-height: 75vh;
+  background: var(--admin-canvas);
+  color: var(--admin-ink);
+}
+
+.theme :global(.admin-layout) {
+  max-width: 1680px;
+  grid-template-columns: 252px minmax(0, 1fr);
+  align-items: start;
+  gap: 28px;
+  padding: 24px clamp(16px, 3vw, 40px);
+}
+
+.theme :global(.admin-rail) {
+  position: sticky;
+  top: 96px;
+  min-height: calc(100vh - 120px);
+  padding: 22px 16px;
+  border: 1px solid #263a32;
+  border-radius: 12px;
+  background: var(--admin-rail);
+  color: #eef2e9;
+  box-shadow: 0 16px 38px rgb(20 37 31 / 14%);
+}
+
+.theme :global(.admin-brand-lockup) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 4px 22px;
+  border-bottom: 1px solid #30443b;
+}
+
+.theme :global(.admin-brand-mark) {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--admin-lime);
+  color: var(--admin-rail);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.theme :global(.admin-brand-lockup b),
+.theme :global(.admin-brand-lockup small) {
+  display: block;
+}
+
+.theme :global(.admin-brand-lockup b) {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.theme :global(.admin-brand-lockup small) {
+  margin-top: 4px;
+  color: #a6b6aa;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.theme :global(.admin-rail-title) {
+  margin: 18px 4px 0;
+  color: #b6c4b8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.theme :global(.admin-rail nav) {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  overflow: visible;
+}
+
+.theme :global(.admin-rail nav button) {
+  min-height: 44px;
+  justify-content: flex-start;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #c4d0c6;
+  padding: 10px 12px;
+}
+
+.theme :global(.admin-rail nav button:hover) {
+  background: #20362d;
+  color: white;
+}
+
+.theme :global(.admin-rail nav button[aria-current='page']) {
+  background: var(--admin-lime);
+  color: var(--admin-rail);
+}
+
+.theme :global(.admin-rail nav button[aria-current='page'] span) {
+  background: rgb(20 37 31 / 12%);
+  color: var(--admin-rail);
+}
+
+.theme :global(.admin-rail > div:last-child) {
+  margin-top: auto;
+  border-color: #30443b;
+}
+
+.theme :global(.admin-rail > div:last-child p:first-child) {
+  color: #a6b6aa;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.theme :global(.admin-rail > div:last-child p:nth-child(2)) {
+  color: var(--admin-coral);
+}
+
+.theme :global(.admin-content) {
+  min-width: 0;
+}
+
+.theme :global(.admin-page-header) {
+  position: relative;
+  overflow: hidden;
+  min-height: 156px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 26px 30px;
+  border: 0;
+  border-radius: 12px;
+  background: #1c332a;
+  color: #f4f6ef;
+}
+
+.theme :global(.admin-page-header)::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--admin-coral);
+  content: '';
+}
+
+.theme :global(.admin-page-header .eyebrow) {
+  color: var(--admin-lime);
+}
+
+.theme :global(.admin-page-header h1) {
+  color: #f4f6ef;
+  font-size: 32px;
+}
+
+.theme :global(.admin-page-header p:not(.eyebrow)) {
+  color: #c1cec3;
+}
+
+.theme :global(.btn) {
+  min-height: 40px;
+  border-radius: 7px;
+  padding: 9px 14px;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.theme :global(.btn:hover) {
+  transform: none;
+}
+
+.theme :global(.btn:not(.btn-outline)) {
+  background: var(--admin-lime);
+  color: var(--admin-rail);
+}
+
+.theme :global(.btn:not(.btn-outline):hover) {
+  background: #c5dc54;
+}
+
+.theme :global(.btn-outline) {
+  border-color: #cbd6ca;
+  background: #fff;
+  color: var(--admin-ink);
+}
+
+.theme :global(.admin-kpis) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.theme :global(.card) {
+  border-color: var(--admin-line);
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.theme :global(.admin-kpis article) {
+  min-height: 112px;
+  padding: 17px 18px;
+  border-top: 3px solid #789082;
+}
+
+.theme :global(.admin-kpis article:nth-child(1)) {
+  border-top-color: var(--admin-coral);
+}
+
+.theme :global(.admin-kpis article:nth-child(2)) {
+  border-top-color: #d5a333;
+}
+
+.theme :global(.admin-kpis article:nth-child(3)) {
+  border-top-color: #4b8b73;
+}
+
+.theme :global(.admin-kpis article:nth-child(4)) {
+  border-top-color: #7692b0;
+}
+
+.theme :global(.admin-kpis article:nth-child(5)) {
+  border-top-color: #84934e;
+}
+
+.theme :global(.admin-kpis article p:first-child) {
+  color: #6b7970;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.theme :global(.admin-kpis article p:last-child) {
+  margin-top: 12px;
+  color: var(--admin-ink);
+  font-size: 22px;
+}
+
+.theme :global(.admin-insights > div) {
+  padding: 20px;
+}
+
+.theme :global(.admin-insights h2),
+.theme :global(.admin-queue > div:first-child b),
+.theme :global(.admin-order-detail h3) {
+  color: var(--admin-ink);
+}
+
+.theme :global(.admin-queue) {
+  padding: 22px;
+}
+
+.theme :global(.admin-work-tabs button) {
+  border: 1px solid var(--admin-line);
+  border-radius: 7px;
+  background: white;
+  color: #59685e;
+}
+
+.theme :global(.admin-work-tabs button[class*='bg-[#12345b]']) {
+  border-color: var(--admin-rail);
+  background: var(--admin-rail);
+  color: white;
+}
+
+.theme :global(.admin-queue table thead) {
+  background: #f4f6f1;
+  color: #64736a;
+}
+
+.theme :global(.admin-queue table th) {
+  padding: 12px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.theme :global(.admin-queue table td) {
+  padding: 12px 10px;
+}
+
+.theme :global(.admin-queue table tr.bg-amber-50) {
+  background: #f4f7e9;
+}
+
+.theme :global(.admin-order-detail) {
+  border-color: var(--admin-line);
+  border-radius: 9px;
+  background: #f7f9f5;
+  padding: 17px;
+}
+
+.theme :global(.field) {
+  min-height: 40px;
+  border-color: #d5dfd4;
+  border-radius: 7px;
+  padding: 9px 11px;
+}
+
+.theme :global(.field:focus) {
+  border-color: #547866;
+  box-shadow: 0 0 0 3px rgb(84 120 102 / 14%);
+}
+
+.theme :global(.bg-brand-600) {
+  background-color: #6f8e71;
+}
+
+@media (max-width: 1100px) {
+  .theme :global(.admin-kpis) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .theme :global(.admin-layout) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .theme :global(.admin-rail) {
+    position: static;
+    min-height: 0;
+    padding: 14px;
+    border-radius: 9px;
+  }
+
+  .theme :global(.admin-brand-lockup) {
+    padding-bottom: 12px;
+  }
+
+  .theme :global(.admin-rail-title) {
+    display: none;
+  }
+
+  .theme :global(.admin-rail nav) {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    overflow-x: auto;
+  }
+
+  .theme :global(.admin-rail nav button) {
+    flex: 0 0 auto;
+  }
+
+  .theme :global(.admin-rail > div:last-child) {
+    display: none;
+  }
+
+  .theme :global(.admin-page-header) {
+    min-height: 130px;
+    padding: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .theme :global(.admin-layout) {
+    padding: 12px;
+  }
+
+  .theme :global(.admin-kpis) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .theme :global(.admin-kpis article) {
+    min-height: 98px;
+    padding: 13px;
+  }
+
+  .theme :global(.admin-kpis article p:last-child) {
+    font-size: 18px;
+  }
+
+  .theme :global(.admin-page-header) {
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .theme :global(.admin-page-header h1) {
+    font-size: 27px;
+  }
+
+  .theme :global(.admin-queue) {
+    padding: 14px;
+  }
+}
+
+.theme {
+  --admin-ink: #12345b;
+  --admin-rail: #12345b;
+  --admin-canvas: #f7f9fc;
+  --admin-line: #dce6f2;
+  --admin-lime: #1769d2;
+  --admin-coral: #f59e0b;
+  background: var(--admin-canvas);
+  color: var(--admin-ink);
+}
+
+.theme :global(.admin-layout) {
+  grid-template-columns: 224px minmax(0, 1fr);
+  gap: 20px;
+  padding: 18px clamp(14px, 2vw, 28px);
+}
+
+.theme :global(.admin-rail) {
+  padding: 18px 14px;
+  border-color: #315275;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(18 52 91 / 12%);
+}
+
+.theme :global(.admin-brand-lockup) {
+  padding-bottom: 16px;
+  border-bottom-color: rgb(255 255 255 / 18%);
+}
+
+.theme :global(.admin-brand-mark) {
+  background: #1769d2;
+  color: #fff;
+}
+
+.theme :global(.admin-brand-lockup small),
+.theme :global(.admin-rail-title) {
+  color: #dbeafe;
+}
+
+.theme :global(.admin-rail nav button) {
+  color: #dce6f2;
+}
+
+.theme :global(.admin-rail nav button:hover) {
+  background: #1b4d80;
+}
+
+.theme :global(.admin-rail nav button[aria-current='page']) {
+  background: #1769d2;
+  color: #fff;
+}
+
+.theme :global(.admin-rail nav button[aria-current='page'] span) {
+  background: rgb(255 255 255 / 18%);
+  color: #fff;
+}
+
+.theme :global(.admin-rail > div:last-child) {
+  border-color: rgb(255 255 255 / 18%);
+}
+
+.theme :global(.admin-rail > div:last-child p:first-child) {
+  color: #c8d8eb;
+}
+
+.theme :global(.admin-rail > div:last-child p:nth-child(2)) {
+  color: #fbbf24;
+}
+
+.theme :global(.admin-page-header) {
+  min-height: 124px;
+  margin-bottom: 16px;
+  padding: 20px 24px;
+  border-radius: 8px;
+  background: #12345b;
+}
+
+.theme :global(.admin-page-header)::after {
+  width: 6px;
+  background: #f59e0b;
+}
+
+.theme :global(.admin-page-header .eyebrow) {
+  color: #bfdbfe;
+}
+
+.theme :global(.admin-page-header p:not(.eyebrow)) {
+  color: #dbeafe;
+}
+
+.theme :global(.btn) {
+  min-height: 38px;
+  padding: 8px 12px;
+}
+
+.theme :global(.btn:not(.btn-outline)) {
+  background: #1769d2;
+  color: #fff;
+}
+
+.theme :global(.btn:not(.btn-outline):hover) {
+  background: #104a9b;
+}
+
+.theme :global(.btn-outline) {
+  border-color: #c8dcf7;
+  color: #1769d2;
+}
+
+.theme :global(.admin-kpis) {
+  gap: 8px;
+}
+
+.theme :global(.admin-submodule .admin-kpis) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.theme :global(.card) {
+  border-radius: 8px;
+}
+
+.theme :global(.admin-kpis article) {
+  min-height: 92px;
+  padding: 12px 14px;
+}
+
+.theme :global(.admin-kpis article:nth-child(1)) {
+  border-top-color: #1769d2;
+}
+
+.theme :global(.admin-kpis article:nth-child(2)) {
+  border-top-color: #f59e0b;
+}
+
+.theme :global(.admin-kpis article:nth-child(3)) {
+  border-top-color: #10b981;
+}
+
+.theme :global(.admin-kpis article:nth-child(4)) {
+  border-top-color: #64748b;
+}
+
+.theme :global(.admin-kpis article:nth-child(5)) {
+  border-top-color: #12345b;
+}
+
+.theme :global(.admin-kpis article p:first-child) {
+  color: #64748b;
+}
+
+.theme :global(.admin-kpis article p:last-child) {
+  margin-top: 7px;
+  font-size: 20px;
+}
+
+.theme :global(.admin-insights > div) {
+  padding: 16px;
+}
+
+.theme :global(.admin-queue) {
+  padding: 16px;
+}
+
+.theme :global(.admin-work-tabs button[class*='bg-[#12345b]']) {
+  border-color: #12345b;
+  background: #12345b;
+}
+
+.theme :global(.admin-queue table thead) {
+  background: #f3f7fc;
+  color: #64748b;
+}
+
+.theme :global(.admin-queue table th),
+.theme :global(.admin-queue table td) {
+  padding: 8px;
+}
+
+.theme :global(.admin-queue table tr.bg-amber-50) {
+  background: #eff6ff;
+}
+
+.theme :global(.admin-order-detail) {
+  background: #f7f9fc;
+  padding: 14px;
+}
+
+.theme :global(.field) {
+  min-height: 38px;
+  border-color: #dce6f2;
+  padding: 8px 10px;
+}
+
+.theme :global(.field:focus) {
+  border-color: #2580e8;
+  box-shadow: 0 0 0 3px rgb(37 128 232 / 12%);
+}
+
+.theme :global(.bg-brand-600) {
+  background-color: #1769d2;
+}
+
+@media (max-width: 900px) {
+  .theme :global(.admin-layout) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .theme :global(.admin-submodule .admin-kpis) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .theme :global(.admin-page-header) {
+    min-height: 112px;
+    padding: 16px;
+  }
+
+  .theme :global(.admin-queue) {
+    padding: 12px;
+  }
+}
+
+.theme ~ :global(footer),
+.theme ~ :global(div.fixed.bottom-5.right-5) {
+  display: none !important;
+}

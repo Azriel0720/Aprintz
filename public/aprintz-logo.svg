@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 128" role="img" aria-labelledby="title">
+  <title id="title">APRINTZ Printz logo</title>
+  <path fill="#050505" fill-rule="evenodd" d="M4 118 58 8l55 110H4Zm22-13h62L58 35l-32 70Z"/>
+  <path fill="#050505" d="M32 89h51l14 11H26z"/>
+  <text x="116" y="96" fill="#00e8ed" font-family="Arial Black,Arial,sans-serif" font-size="88" font-weight="900">Printz</text>
+  <path fill="#050505" d="M0 120h420v6H0z"/>
+</svg>
