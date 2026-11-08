@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 	for (let offset = 0; ; offset += 1000) {
 		const { data, error } = await supabase
 			.from('orders')
-			.select('id,order_number,customer_name,email,phone,address,status,total_estimate,created_at,notes,admin_notes,shipping_courier,tracking_number,shipped_at')
+			.select('id,order_number,customer_name,email,phone,address,status,total_estimate,final_total,invoice_status,invoice_sent_at,created_at,notes,admin_notes,shipping_courier,tracking_number,shipped_at')
 			.order('created_at', { ascending: false })
 			.range(offset, offset + 999);
 		if (error) return NextResponse.json({ error: error.message }, { status: 500 });

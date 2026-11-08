@@ -35,7 +35,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 	const { id } = await params;
 	const { data: order, error: orderError } = await client
 		.from('orders')
-		.select('id,order_number,customer_name,email,phone,address,status,total_estimate,created_at,notes,admin_notes,shipping_courier,tracking_number,shipped_at')
+		.select('id,order_number,customer_name,email,phone,address,status,total_estimate,final_total,invoice_status,invoice_sent_at,created_at,notes,admin_notes,shipping_courier,tracking_number,shipped_at')
 		.eq('id', id)
 		.maybeSingle();
 	if (orderError) return NextResponse.json({ error: orderError.message }, { status: 500 });

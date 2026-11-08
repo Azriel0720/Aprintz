@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, ClipboardList, Download, Eye, Home, Package, Truck, Users, X } from 'lucide-react';
+import { BarChart3, ClipboardList, Download, Eye, Home, Mail, Package, Truck, Users, X } from 'lucide-react';
 import { formatIDR } from '@/lib/products';
 import AdminProducts from '@/components/AdminProducts';
 import AdminManualOrder from '@/components/AdminManualOrder';
@@ -41,6 +41,9 @@ type Order = {
   address: string;
   status: string;
   total_estimate: number;
+  final_total?: number | null;
+  invoice_status?: string;
+  invoice_sent_at?: string | null;
   created_at: string;
   notes?: string | null;
   admin_notes?: string | null;
@@ -264,6 +267,8 @@ export default function AdminDashboard() {
   const [trackingNumberDraft, setTrackingNumberDraft] = useState('');
   const [shippedAtDraft, setShippedAtDraft] = useState('');
   const [savingShipping, setSavingShipping] = useState(false);
+  const [finalTotalDraft, setFinalTotalDraft] = useState('');
+  const [sendingInvoice, setSendingInvoice] = useState(false);
 
   async function loadOrders() {
     setBusy(true);
@@ -382,6 +387,10 @@ export default function AdminDashboard() {
     setShippedAtDraft(toLocalDateTime(selectedOrder?.shipped_at));
   }, [selectedOrder?.id, selectedOrder?.shipping_courier, selectedOrder?.tracking_number, selectedOrder?.shipped_at]);
 
+  useEffect(() => {
+    setFinalTotalDraft(selectedOrder?.final_total == null ? '' : String(selectedOrder.final_total));
+  }, [selectedOrder?.id, selectedOrder?.final_total]);
+
   const exportParams = new URLSearchParams();
   if (search.trim()) exportParams.set('q', search.trim());
   if (statusFilter !== 'all') exportParams.set('status', statusFilter);
@@ -434,6 +443,38 @@ export default function AdminDashboard() {
       await loadOrders();
     }
     setSavingShipping(false);
+  }
+
+  async function sendInvoice() {
+    if (!selectedOrder) return;
+    const finalTotal = Number(finalTotalDraft);
+    if (!Number.isFinite(finalTotal) || finalTotal <= 0) {
+      setError('Masukkan harga final invoice yang valid.');
+      return;
+    }
+
+    setSendingInvoice(true);
+    setError('');
+    setNotice('');
+    try {
+      const response = await fetch(`/api/admin/orders/${selectedOrder.id}/invoice`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ finalTotal }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Invoice gagal dikirim.');
+      setNotice(`Invoice ${selectedOrder.order_number} berhasil dikirim ke ${selectedOrder.email}.`);
+      await loadOrders();
+      const detailResponse = await fetch(`/api/admin/orders/${selectedOrder.id}`);
+      const detailData = await detailResponse.json();
+      if (!detailResponse.ok) throw new Error(detailData.error || 'Invoice terkirim, tetapi detail order gagal dimuat ulang.');
+      setSelectedOrderDetail(detailData.order);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : 'Invoice gagal dikirim.');
+    } finally {
+      setSendingInvoice(false);
+    }
   }
 
   function openOrderFromShipping(orderId: string) {
@@ -668,8 +709,23 @@ export default function AdminDashboard() {
                   <button type="button" onClick={() => void saveShippingDetails()} disabled={savingShipping || (shippingCourierDraft === (selectedOrder.shipping_courier ?? '') && trackingNumberDraft === (selectedOrder.tracking_number ?? '') && shippedAtDraft === toLocalDateTime(selectedOrder.shipped_at))} className="btn btn-outline w-full disabled:opacity-50">{savingShipping ? 'Menyimpan...' : 'Simpan pengiriman'}</button>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Total</p>
+                  <p className="text-xs text-slate-500">Subtotal estimasi</p>
                   <p className="font-bold">{formatIDR(selectedOrder.total_estimate || 0)}</p>
+                </div>
+                <div className="space-y-2 border-t border-slate-200 pt-4">
+                  <label htmlFor="invoice-final-total" className="text-xs font-bold text-slate-600">Harga final invoice (Rp)</label>
+                  <input id="invoice-final-total" type="number" min="1" step="1" required value={finalTotalDraft} onChange={event => setFinalTotalDraft(event.target.value)} className="field w-full" disabled={selectedOrder.invoice_status === 'sent'} placeholder="Masukkan total final" />
+                  {selectedOrder.invoice_sent_at ? (
+                    <p className="text-xs font-semibold text-emerald-700">Invoice terkirim ke email pelanggan pada {new Date(selectedOrder.invoice_sent_at).toLocaleString('id-ID')}.</p>
+                  ) : (
+                    <>
+                      <p className="text-[11px] leading-5 text-slate-500">Mengirim invoice akan mengubah status order menjadi menunggu pembayaran.</p>
+                      <button type="button" onClick={() => void sendInvoice()} disabled={sendingInvoice || selectedOrder.invoice_status === 'sending'} className="btn inline-flex w-full items-center justify-center gap-2 disabled:opacity-50">
+                        <Mail size={16} />{sendingInvoice ? 'Mengirim invoice...' : 'Konfirmasi harga & kirim invoice'}
+                      </button>
+                    </>
+                  )}
+                  {selectedOrder.invoice_status === 'failed' && <p className="text-xs text-amber-700">Pengiriman sebelumnya gagal. Periksa email pengirim dan coba lagi.</p>}
                 </div>
                 {selectedOrder.order_items && selectedOrder.order_items.length > 0 && (
                   <div>
