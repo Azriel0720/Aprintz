@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
 import { getCurrentUser } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
@@ -30,10 +29,10 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 	if (!supabase) return NextResponse.json({ error: 'Database belum dikonfigurasi.' }, { status: 503 });
 	const client = supabase;
 
-	const gmailUser = process.env.GMAIL_USER;
-	const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-	if (!gmailUser || !gmailAppPassword) {
-		return NextResponse.json({ error: 'Pengiriman invoice belum dikonfigurasi. Atur GMAIL_USER dan GMAIL_APP_PASSWORD di Vercel.' }, { status: 503 });
+	const mailerUrl = process.env.GMAIL_SCRIPT_URL;
+	const mailerToken = process.env.GMAIL_SCRIPT_TOKEN;
+	if (!mailerUrl || !mailerToken) {
+		return NextResponse.json({ error: 'Pengiriman invoice belum dikonfigurasi. Atur GMAIL_SCRIPT_URL dan GMAIL_SCRIPT_TOKEN di Vercel.' }, { status: 503 });
 	}
 
 	const { id } = await params;
@@ -140,26 +139,29 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 		</html>`;
 
 	try {
-		const transporter = nodemailer.createTransport({
-			host: 'smtp.gmail.com',
-			port: 465,
-			secure: true,
-			auth: {
-				user: gmailUser,
-				pass: gmailAppPassword,
-			},
+		const mailResponse = await fetch(mailerUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				token: mailerToken,
+				to: order.email,
+				subject: `Invoice APRINTZ ${order.order_number}`,
+				html,
+				text,
+			}),
+			signal: AbortSignal.timeout(15000),
+			cache: 'no-store',
 		});
-		await transporter.sendMail({
-			from: `APRINTZ <${gmailUser}>`,
-			to: order.email,
-			subject: `Invoice APRINTZ ${order.order_number}`,
-			html,
-			text,
-		});
+		const mailResult: unknown = await mailResponse.json().catch(() => null);
+		if (!mailResponse.ok || !mailResult || typeof mailResult !== 'object' || !('ok' in mailResult) || mailResult.ok !== true) {
+			console.error('Invoice email service rejected the request:', mailResponse.status);
+			await markInvoiceFailed();
+			return NextResponse.json({ error: 'Layanan email menolak invoice. Periksa deployment Google Apps Script dan konfigurasi token.' }, { status: 502 });
+		}
 	} catch (error) {
-		console.error('Invoice Gmail delivery failed:', error);
+		console.error('Invoice email service request failed:', error);
 		await markInvoiceFailed();
-		return NextResponse.json({ error: 'Email invoice gagal dikirim. Pastikan App Password Google dan alamat Gmail sudah benar.' }, { status: 502 });
+		return NextResponse.json({ error: 'Layanan email tidak merespons. Periksa URL Google Apps Script dan coba lagi.' }, { status: 502 });
 	}
 
 	const { error: sentError } = await client
